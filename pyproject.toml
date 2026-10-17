@@ -3,6 +3,8 @@ name = "agentbench"
 version = "0.1.0"
 description = "Decision-delegated agent controllers on Terminal-Bench"
 readme = "README.md"
+license = "MIT"
+license-files = ["LICENSE"]
 authors = [
     { name = "Naman Vats", email = "be10360.17@bitmesra.ac.in" }
 ]
