@@ -1,7 +1,7 @@
 from collections import Counter
 
 from agentbench.config import TriggerCfg
-from agentbench.tools import Action, is_verification, is_write, normalize_command
+from agentbench.tools import VERIFY_RE, WRITE_RE, Action, last_match, normalize_command
 
 PRIORITY = ("T1", "T2", "T4")
 
@@ -14,19 +14,19 @@ class TriggerDetector:
         self.actions: list[Action] = []
         self.consecutive_failures = 0
         self.verification_cmds = 0
-        self.last_write: int | None = None
-        self.last_verify: int | None = None
+        self.last_write: tuple[int, int] | None = None  # (action index, offset in command)
+        self.last_verify: tuple[int, int] | None = None
         self.last_fired: dict[str, int] = {}
         self.fire_counts: Counter[str] = Counter()
 
     def observe(self, action: Action) -> None:
         self.actions.append(action)
         self.consecutive_failures = self.consecutive_failures + 1 if action.failed else 0
-        if is_write(action.command):
-            self.last_write = action.index
-        if is_verification(action.command):
+        if (pos := last_match(WRITE_RE, action.command)) is not None:
+            self.last_write = (action.index, pos)
+        if (pos := last_match(VERIFY_RE, action.command)) is not None:
             self.verification_cmds += 1
-            self.last_verify = action.index
+            self.last_verify = (action.index, pos)
 
     @property
     def verified_after_last_edit(self) -> bool:

@@ -33,6 +33,7 @@ class CallUsage:
     cost_usd: float = 0.0
     latency_s: float = 0.0
     retries: int = 0
+    finish_reason: str | None = None
     error: str | None = None
 
     def to_dict(self) -> dict[str, Any]:
@@ -62,6 +63,7 @@ def _chat_usage(cfg: ModelCfg, resp: Any, latency: float, retries: int) -> CallU
         cost_usd=float(usage.get("cost") or 0.0),
         latency_s=latency,
         retries=retries,
+        finish_reason=resp.choices[0].finish_reason if resp.choices else None,
     )
 
 

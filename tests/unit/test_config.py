@@ -52,7 +52,7 @@ def test_real_arms_load(arm):
 
 def test_placeholder_rejected():
     with pytest.raises(ConfigError, match="CONFIGURE_ME"):
-        load_arm("agents/sonnet-native.yaml")
+        load_arm("agents/qwen-native.yaml")
 
 
 def test_unknown_field_rejected(tmp_path):

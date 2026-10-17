@@ -78,12 +78,15 @@ def split(
     n_heldout: int,
     hard_cap: float,
     seed: int,
+    excluded: set[str] = frozenset(),
 ) -> tuple[TaskList, TaskList, list[str]]:
     """Stratified dev / held-out split (experiment_plan.md §7.3–7.4)."""
     rng = random.Random(seed)
     pools: dict[str, list[TaskEntry]] = {s: [] for s in STRATA}
     missing = []
     for task in calibration_tasks.tasks:
+        if task.name in excluded:
+            continue
         if task.name not in pass_counts:
             missing.append(task.name)
             continue
@@ -100,6 +103,10 @@ def split(
     held_alloc = allocate(sizes, n_heldout)
     heldout = [t for s in STRATA for t in rest[s][: held_alloc[s]]]
     return TaskList(tasks=dev), TaskList(tasks=heldout), missing
+
+
+def excluded_tasks(catalog: str | Path = "tasks/catalog.yaml") -> set[str]:
+    return {t["name"] for t in read_yaml(catalog)["tasks"] if t.get("excluded_reason")}
 
 
 def freeze(path: str | Path) -> str:

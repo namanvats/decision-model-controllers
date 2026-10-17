@@ -130,3 +130,19 @@ async def test_controller_only_appends_fixed_templates(fake_env, recorder):
     assert user_msgs and set(user_msgs) <= templates
     assert loop.messages[0]["content"] == loop.arm.system_prompt
     assert TOOLS[0]["function"]["name"] == "bash"
+
+
+async def test_content_filter_is_a_refusal(fake_env, recorder):
+    class Refuses:
+        slug = "x"
+
+        async def complete(self, messages, tools):
+            from agentbench.openrouter import CallUsage
+
+            return {"role": "assistant", "content": ""}, CallUsage(
+                "x", finish_reason="content_filter"
+            )
+
+    loop = AgentLoop(arm_with(), Refuses(), fake_env, None, recorder)
+    result = await loop.run("do the task")
+    assert result.termination_reason == "model_refusal" and fake_env.commands == []

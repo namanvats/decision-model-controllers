@@ -50,6 +50,16 @@ def test_strata_and_split_cap_hard():
         seed=1,
     )
     assert missing == ["tb/new"] and len(dev.tasks) == 8
+    _, held2, _ = split(
+        TaskList(tasks=[TaskEntry(name=n) for n in names]),
+        counts,
+        n_dev=8,
+        n_heldout=30,
+        hard_cap=1.0,
+        seed=1,
+        excluded={"tb/t0"},
+    )
+    assert "tb/t0" not in {t.name for t in held2.tasks}
     assert sum(t.stratum == "hard" for t in held.tasks) <= 4
     assert not {t.name for t in dev.tasks} & {t.name for t in held.tasks}
 

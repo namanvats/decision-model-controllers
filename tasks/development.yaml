@@ -1,0 +1,28 @@
+schema_version: 1
+frozen: false
+checksum: null
+tasks:
+- name: terminal-bench/mteb-leaderboard
+  category: data-science
+  stratum: easy
+- name: terminal-bench/fix-code-vulnerability
+  category: security
+  stratum: easy
+- name: terminal-bench/mailman
+  category: system-administration
+  stratum: easy
+- name: terminal-bench/log-summary-date-ranges
+  category: data-processing
+  stratum: easy
+- name: terminal-bench/pytorch-model-recovery
+  category: model-training
+  stratum: easy
+- name: terminal-bench/build-cython-ext
+  category: debugging
+  stratum: easy
+- name: terminal-bench/feal-differential-cryptanalysis
+  category: mathematics
+  stratum: mid
+- name: terminal-bench/mteb-retrieve
+  category: data-science
+  stratum: hard

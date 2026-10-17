@@ -1,10 +1,11 @@
 schema_version: 1
 source_commit: 7131e4375048a0e408a8fb404b5f499d726b695b
 exclusion_rules:
-  max_cpus: 4
-  max_memory_mb: 8192
-  max_storage_mb: 10240
-  max_agent_timeout_s: 3600
+  max_cpus: '4'
+  max_memory_mb: '8192'
+  max_storage_mb: '10240'
+  max_agent_timeout_s: '3600'
+  manual: tasks/exclusions.yaml
 tasks:
 - name: terminal-bench/adaptive-rejection-sampler
   category: scientific-computing
@@ -41,7 +42,9 @@ tasks:
   gpus: 0
   allow_internet: true
   docker_image: alexgshaw/break-filter-js-from-html:20251031
-  excluded_reason: null
+  excluded_reason: 'model_refusal: Sonnet 5.5 returns finish_reason=content_filter
+    (native: refusal) on the first turn, every time (calibration 2026-10-11, 2/2 attempts,
+    $0 spent)'
 - name: terminal-bench/build-cython-ext
   category: debugging
   difficulty: medium

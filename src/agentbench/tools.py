@@ -47,14 +47,18 @@ TOOLS = [
     },
 ]
 
+# Test runners, diff/cmp checks, running a built artifact, or running a script file.
 VERIFY_RE = re.compile(
-    r"\b(pytest|unittest|tox|nox|ctest|diff|cmp|make\s+(test|check)|cargo\s+test|go\s+test"
+    r"\b(pytest|unittest|tox|nox|ctest|diff|cmp|cargo\s+(test|run)|go\s+(test|run)"
     r"|npm\s+(run\s+)?test|yarn\s+test|sha256sum\s+-c|md5sum\s+-c)\b"
+    r"|\bmake\b[^;&|\n]*\b(test|tests|check|testsuite)\b"
     r"|(^|[;&|(]\s*)\./[\w.-]+"
+    r"|\b(python[\d.]*|perl|node|ruby|bash|sh|Rscript|julia|php)\s+(-\S+\s+)*"
+    r"[\w./~-]+\.(py|pl|js|mjs|rb|sh|R|jl|php)\b"
 )
 WRITE_RE = re.compile(
     r"(?<![\d<>&])>>?(?!&)(?!\s*/dev/null)"
-    r"|\btee\b|\bsed\s+(-\w*\s+)*-i|\b(cp|mv|rm|mkdir|touch|chmod|ln|patch|install)\b"
+    r"|\btee\b|\bsed\s+(-\w*\s+)*-i|\bperl\s+(-\S+\s+)*-\w*i|\b(cp|mv|rm|mkdir|touch|chmod|ln|patch|install)\b"
     r"|\bgit\s+(apply|checkout|reset|commit|merge|rebase|am|restore)\b"
     r"|<<-?\s*['\"]?\w+|\bpip3?\s+install\b|\bapt(-get)?\s+install\b"
 )
@@ -98,6 +102,12 @@ def normalize_command(command: str) -> str:
 
 def output_hash(text: str) -> str:
     return hashlib.sha1(text.encode()).hexdigest()
+
+
+def last_match(pattern: re.Pattern, command: str) -> int | None:
+    """Start offset of the last match, so edits and checks in one command can be ordered."""
+    starts = [m.start() for m in pattern.finditer(command)]
+    return starts[-1] if starts else None
 
 
 def is_verification(command: str) -> bool:

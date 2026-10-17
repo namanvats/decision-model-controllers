@@ -64,3 +64,19 @@ def test_verified_after_last_edit():
     assert not d.verified_after_last_edit
     d.observe(act(2, "pytest -q"))
     assert d.verified_after_last_edit and d.verification_cmds == 2
+
+
+def test_running_a_script_after_editing_counts_as_verified():
+    d = TriggerDetector(CFG)
+    d.observe(act(0, "cd /app; cat > d.pl <<'E'\nprint 1\nE\nperl d.pl; cat out.txt"))
+    assert d.verified_after_last_edit
+    d.observe(act(1, "cd /app && sed -i 's/a/b/' x.py"))
+    assert not d.verified_after_last_edit
+    d.observe(act(2, "cd /app && PYTHONPATH=/app python3 /tmp/check.py"))
+    assert d.verified_after_last_edit
+
+
+def test_check_then_edit_in_one_command_is_unverified():
+    d = TriggerDetector(CFG)
+    d.observe(act(0, "pytest -q; echo done > status.txt"))
+    assert not d.verified_after_last_edit

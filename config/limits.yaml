@@ -7,9 +7,11 @@ calibration:
   max_wall_s: 14400
   max_controller_calls: 30
 # Frozen experiment caps: p90 of passing native calibration runs (`agentbench limits`).
+# Set above every calibration run (passing max: 52 steps / $0.48; failing max: $0.98) so caps
+# never decide outcomes; G2 abandon becomes possible from step 24 (0.4 × 60). See decision log.
 sonnet:
-  max_agent_steps: CONFIGURE_ME
-  max_trial_usd: CONFIGURE_ME
+  max_agent_steps: 60
+  max_trial_usd: 1.00
   max_total_tokens: 30000000
   max_wall_s: 14400
   max_controller_calls: 30

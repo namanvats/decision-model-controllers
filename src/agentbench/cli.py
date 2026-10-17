@@ -140,11 +140,17 @@ def tasks_split(
     eval_out: str = "tasks/evaluation.yaml",
 ) -> None:
     """Stratify calibrated tasks (hard/mid/easy) and draw dev + held-out lists."""
-    from agentbench.tasks import native_pass_counts, split, write_tasks
+    from agentbench.tasks import excluded_tasks, native_pass_counts, split, write_tasks
 
     exp = load_experiment(calibration)
     dev, heldout, missing = split(
-        load_tasks(exp.tasks), native_pass_counts(exp.id, arm), n_dev, n_heldout, hard_cap, seed
+        load_tasks(exp.tasks),
+        native_pass_counts(exp.id, arm),
+        n_dev,
+        n_heldout,
+        hard_cap,
+        seed,
+        excluded_tasks(),
     )
     write_tasks(dev_out, dev)
     write_tasks(eval_out, heldout)

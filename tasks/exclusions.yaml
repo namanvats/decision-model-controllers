@@ -1,0 +1,5 @@
+# Manual exclusions applied by scripts/build_catalog.py, with evidence. Never add tasks based on
+# controller results; only for reasons no controller can affect (refusals, broken environments).
+terminal-bench/break-filter-js-from-html: >-
+  model_refusal: Sonnet 5.5 returns finish_reason=content_filter (native: refusal) on the
+  first turn, every time (calibration 2026-10-11, 2/2 attempts, $0 spent)

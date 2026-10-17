@@ -102,6 +102,8 @@ class AgentLoop:
             self.messages.append(message)
             if reason := self._breach(check_steps=False):
                 return reason
+            if usage.finish_reason == "content_filter":
+                return "model_refusal"
 
             tool_calls = message.get("tool_calls") or []
             finish_requested = not tool_calls
