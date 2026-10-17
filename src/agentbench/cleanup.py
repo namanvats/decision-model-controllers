@@ -2,6 +2,7 @@ import json
 from collections.abc import Callable
 from dataclasses import dataclass
 
+from agentbench.ledger import trial_manifests
 from agentbench.runner import results_root
 
 TRIAL_LABEL = "agentbench.trial"
@@ -18,11 +19,10 @@ class SandboxRow:
 
 
 def known_trials() -> dict[str, str]:
-    uids = {}
-    for manifest in results_root().rglob("manifest.json"):
-        data = json.loads(manifest.read_text())
-        uids[data["trial_uid"]] = data["trial_id"]
-    return uids
+    root = results_root()
+    exp_dirs = [d for d in root.iterdir() if d.is_dir()] if root.exists() else []
+    manifests = [json.loads(m.read_text()) for d in exp_dirs for m in trial_manifests(d)]
+    return {m["trial_uid"]: m["trial_id"] for m in manifests}
 
 
 def active_experiments() -> set[str]:

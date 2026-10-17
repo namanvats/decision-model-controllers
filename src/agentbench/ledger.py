@@ -4,6 +4,11 @@ from pathlib import Path
 from agentbench.config import Budget
 
 
+def trial_manifests(exp_dir: Path) -> list[Path]:
+    """Our manifests only: <task>/<arm>/<attempt>/ and archived _infra/<trial>/ (not Harbor's)."""
+    return sorted([*exp_dir.glob("*/*/*/manifest.json"), *exp_dir.glob("_infra/*/manifest.json")])
+
+
 def trial_spend(trial_dir: Path) -> float:
     """Actual spend from usage.json; the trial cap if a started trial left no usage record."""
     usage = trial_dir / "usage.json"
@@ -20,7 +25,7 @@ class Ledger:
 
     def __init__(self, exp_dir: Path, budget: Budget):
         self.budget = budget
-        self.spent = sum(trial_spend(m.parent) for m in exp_dir.rglob("manifest.json"))
+        self.spent = sum(trial_spend(m.parent) for m in trial_manifests(exp_dir))
         self.in_flight = 0.0
         self.warned = False
 

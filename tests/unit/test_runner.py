@@ -111,7 +111,10 @@ def test_outcomes():
 
 
 def test_ledger_admission(results_dir):
-    write_trial(results_dir, "exp", "tb/a", "x", 1, passed=True, usd=0.9)
+    trial = write_trial(results_dir, "exp", "tb/a", "x", 1, passed=True, usd=0.9)
+    harbor_manifest = trial / "harbor" / "job" / "a__xyz" / "artifacts" / "manifest.json"
+    harbor_manifest.parent.mkdir(parents=True)
+    harbor_manifest.write_text("[]")  # Harbor's own manifest must be ignored
     crashed = results_dir / "exp" / "b" / "x" / "1"
     crashed.mkdir(parents=True)
     write_json(crashed / "manifest.json", {"trial_cap_usd": 0.5})
@@ -170,3 +173,13 @@ async def test_run_experiment_end_to_end(monkeypatch, tmp_path, results_dir):
     logs.clear()
     await runner.run_experiment(exp, arms, trials, log=logs.append)
     assert any("0 to run" in line for line in logs)  # resume skips completed trials
+
+
+def test_known_trials_ignores_harbor_manifests(results_dir):
+    from agentbench.cleanup import known_trials
+
+    trial = write_trial(results_dir, "exp", "tb/a", "x", 1, passed=True, usd=0.1)
+    nested = trial / "harbor" / "job" / "a__xyz" / "artifacts" / "manifest.json"
+    nested.parent.mkdir(parents=True)
+    nested.write_text("[]")
+    assert list(known_trials().values()) == ["exp--a--x--a1"]
