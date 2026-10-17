@@ -12,3 +12,7 @@ results/*
 jobs/
 vendor/
 *.duckdb
+eval.log
+*.log
+nohup.out
+run_outputs_*.txt
