@@ -4,7 +4,7 @@ version = "0.1.0"
 description = "Decision-delegated agent controllers on Terminal-Bench"
 readme = "README.md"
 authors = [
-    { name = "Naman Vats", email = "naman@sentient.xyz" }
+    { name = "Naman Vats", email = "be10360.17@bitmesra.ac.in" }
 ]
 requires-python = ">=3.12"
 dependencies = [
