@@ -43,6 +43,8 @@ uv run pytest                # unit tests, zero spend
 
 ## Runbook
 
+Short version with one-line comments per command: [docs/runbook.md](docs/runbook.md).
+
 Run `agentbench cleanup` after every phase and after any interrupted run.
 
 ### Phase 0: smoke (about $3)

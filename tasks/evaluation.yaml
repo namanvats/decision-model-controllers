@@ -1,6 +1,6 @@
 schema_version: 1
-frozen: false
-checksum: null
+frozen: true
+checksum: 53c0a40f5ca59d7fe0d2477591d83c125844987a66b4b253fb25bc1be6bb4f9a
 tasks:
 - name: terminal-bench/write-compressor
   category: software-engineering

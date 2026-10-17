@@ -1,6 +1,12 @@
 schema_version: 1
-# Filled by `agentbench placebo-dist` from dev-phase Jev runs (experiment_plan.md §5.8).
 seed: 20261011
-source: CONFIGURE_ME
-progress: CONFIGURE_ME
-finish: CONFIGURE_ME
+source: 'sonnet-jev in tb21-dev-v1 on 2026-10-11 (n={''progress'': 8, ''finish'':
+  23})'
+progress:
+  continue: 0.625
+  investigate: 0.125
+  recover: 0.25
+  abandon: 0.0
+finish:
+  finish: 0.6522
+  verify: 0.3478
