@@ -1,0 +1,5 @@
+schema_version: 1
+frozen: false
+checksum: null
+tasks:
+  - {name: terminal-bench/fix-git, category: software-engineering, stratum: null}

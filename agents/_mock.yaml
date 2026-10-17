@@ -1,0 +1,14 @@
+schema_version: 2
+id: _mock
+scaffold: custom-react
+reasoning:
+  model_ref: mock_main
+controller:
+  type: rules
+system_prompt_ref: config/prompts/system.md
+triggers_ref: config/triggers.yaml
+guidance_ref: config/prompts/guidance.md
+limits_ref: config/limits.yaml#smoke
+tools: [bash, finish]
+tool_output_truncation: {head_chars: 4000, tail_chars: 8000}
+context_compaction: false

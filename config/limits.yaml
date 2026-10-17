@@ -1,0 +1,27 @@
+schema_version: 1
+# Generous caps used only for Phase 1 calibration (experiment_plan.md §6).
+calibration:
+  max_agent_steps: 100
+  max_trial_usd: 3.00
+  max_total_tokens: 30000000
+  max_wall_s: 14400
+  max_controller_calls: 30
+# Frozen experiment caps: p90 of passing native calibration runs (`agentbench limits`).
+sonnet:
+  max_agent_steps: CONFIGURE_ME
+  max_trial_usd: CONFIGURE_ME
+  max_total_tokens: 30000000
+  max_wall_s: 14400
+  max_controller_calls: 30
+qwen:
+  max_agent_steps: CONFIGURE_ME
+  max_trial_usd: CONFIGURE_ME
+  max_total_tokens: 30000000
+  max_wall_s: 14400
+  max_controller_calls: 30
+smoke:
+  max_agent_steps: 30
+  max_trial_usd: 1.00
+  max_total_tokens: 3000000
+  max_wall_s: 1800
+  max_controller_calls: 10

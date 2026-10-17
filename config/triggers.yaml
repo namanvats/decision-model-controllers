@@ -1,0 +1,13 @@
+schema_version: 1
+t1_consecutive_failures: 2
+t2_command_window: 5
+t2_command_repeats: 2
+t2_output_window: 3
+t2_output_repeats: 2
+t4_every_n_steps: 10
+refire_cooldown_steps: 3
+g2_min_step_fraction: 0.4
+g2_min_consecutive_failures: 3
+g2_min_t2_fires: 2
+g3_max_verify: 2
+rules_abandon_min_failures: 4

@@ -1,0 +1,14 @@
+schema_version: 2
+id: tb21-smoke-mock-v1
+phase: smoke
+tasks: tasks/smoke.yaml
+arms:
+  - agents/_mock.yaml
+attempts: 1
+randomize_arm_order: true
+seed: 20261011
+concurrency: 1
+budget:
+  hard_cap_usd: 1
+  soft_warning_usd: 0.5
+require_frozen_tasks: false

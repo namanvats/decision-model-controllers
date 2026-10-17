@@ -1,0 +1,15 @@
+schema_version: 2
+id: tb21-qwen-eval-v1
+phase: eval
+tasks: tasks/evaluation.yaml
+arms:
+  - agents/qwen-native.yaml
+  - agents/qwen-jev.yaml
+attempts: 3
+randomize_arm_order: true
+seed: 20261011
+concurrency: 1
+budget:
+  hard_cap_usd: 60
+  soft_warning_usd: 30
+require_frozen_tasks: true

@@ -1,0 +1,10 @@
+schema_version: 1
+noninferiority_margin: -0.10
+bootstrap_resamples: 10000
+seed: 20261011
+comparisons:
+  - {id: C1, treatment: sonnet-jev, control: sonnet-native, confirmatory: true}
+  - {id: C2, treatment: sonnet-jev, control: sonnet-smallllm, confirmatory: false}
+  - {id: C3, treatment: sonnet-jev, control: sonnet-rules, confirmatory: false}
+  - {id: C4, treatment: sonnet-jev, control: sonnet-placebo, confirmatory: false}
+  - {id: C5, treatment: qwen-jev, control: qwen-native, confirmatory: false}

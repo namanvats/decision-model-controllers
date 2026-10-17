@@ -1,0 +1,17 @@
+schema_version: 2
+id: qwen-jev
+scaffold: custom-react
+reasoning:
+  model_ref: qwen_main
+controller:
+  type: jev
+  model_ref: jev
+  criteria_ref: config/prompts/jev_criteria.yaml
+  timeout_s: 2
+system_prompt_ref: config/prompts/system.md
+triggers_ref: config/triggers.yaml
+guidance_ref: config/prompts/guidance.md
+limits_ref: config/limits.yaml#qwen
+tools: [bash, finish]
+tool_output_truncation: {head_chars: 4000, tail_chars: 8000}
+context_compaction: false

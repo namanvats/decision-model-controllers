@@ -1,0 +1,17 @@
+schema_version: 2
+id: tb21-smoke-v1
+phase: smoke
+tasks: tasks/smoke.yaml
+arms:
+  - agents/sonnet-native.yaml
+  - agents/sonnet-smallllm.yaml
+  - agents/sonnet-jev.yaml
+attempts: 1
+randomize_arm_order: true
+seed: 20261011
+concurrency: 1
+limits_ref: config/limits.yaml#smoke
+budget:
+  hard_cap_usd: 15
+  soft_warning_usd: 5
+require_frozen_tasks: false

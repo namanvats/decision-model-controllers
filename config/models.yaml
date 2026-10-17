@@ -1,0 +1,29 @@
+schema_version: 1
+# OpenRouter chooses the serving host for every model; the host is logged on each call.
+gateway:
+  base_url: https://openrouter.ai/api/v1
+  api_key_env: OPENROUTER_API_KEY
+models:
+  sonnet_main:
+    slug: anthropic/claude-sonnet-5.5
+    temperature: null            # Claude 5.x endpoints do not accept temperature
+    max_output_tokens: 32000
+    reasoning: {effort: high}    # reasoning is mandatory for Sonnet 5.5; pin the effort explicitly
+    prompt_caching: true
+  qwen_main:
+    slug: qwen/qwen3.8-max-0902
+    temperature: 0
+    max_output_tokens: 32000
+    reasoning: CONFIGURE_ME      # mandatory for this model (default xhigh); pick an effort before Phase 1
+  smallllm_controller:
+    slug: anthropic/claude-haiku-5.5
+    temperature: null
+    reasoning: {enabled: false}  # otherwise defaults to medium effort: slow and costly for a one-word choice
+    max_output_tokens: 32000
+  mock_main:
+    kind: mock
+    slug: mock/scripted
+jev:
+  slug: typesafe/jev-1.13
+  endpoint: https://openrouter.ai/api/v1/systemone
+  context_tokens: 32000

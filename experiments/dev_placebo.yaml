@@ -1,0 +1,14 @@
+schema_version: 2
+id: tb21-dev-placebo-v1
+phase: dev
+tasks: tasks/development.yaml
+arms:
+  - agents/sonnet-placebo.yaml
+attempts: 2
+randomize_arm_order: true
+seed: 20261011
+concurrency: 1
+budget:
+  hard_cap_usd: 40
+  soft_warning_usd: 15
+require_frozen_tasks: false

@@ -1,0 +1,17 @@
+schema_version: 1
+progress:
+  instructions: >-
+    The state describes an autonomous terminal agent working on a task at a decision point.
+    Choose the option that best describes the agent's situation.
+  criteria:
+    continue: The agent is making progress toward the task goal.
+    investigate: The agent is acting without enough information about the environment.
+    recover: The agent is stuck repeating a failing approach.
+    abandon: The task is very unlikely to be completed within the remaining budget.
+finish:
+  instructions: >-
+    The state describes an autonomous terminal agent that has asked to finish its task.
+    Choose whether the transcript shows the task is complete.
+  criteria:
+    finish: Evidence in the transcript shows the explicit requirements are met.
+    verify: Requirements are unchecked or evidence is missing.

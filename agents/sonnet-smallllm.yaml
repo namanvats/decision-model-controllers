@@ -1,0 +1,18 @@
+schema_version: 2
+id: sonnet-smallllm
+scaffold: custom-react
+reasoning:
+  model_ref: sonnet_main
+controller:
+  type: small_llm
+  model_ref: smallllm_controller
+  criteria_ref: config/prompts/jev_criteria.yaml
+  prompt_ref: config/prompts/smallllm_controller.md
+  timeout_s: 10
+system_prompt_ref: config/prompts/system.md
+triggers_ref: config/triggers.yaml
+guidance_ref: config/prompts/guidance.md
+limits_ref: config/limits.yaml#sonnet
+tools: [bash, finish]
+tool_output_truncation: {head_chars: 4000, tail_chars: 8000}
+context_compaction: false
