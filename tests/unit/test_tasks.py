@@ -105,3 +105,27 @@ def test_placebo_distribution(results_dir):
     assert dist.finish == {"finish": 0.0, "verify": 1.0}
     with pytest.raises(ValueError):
         placebo_distribution(["dev"], "sonnet-native", seed=3)
+
+
+def test_sample_excludes_listed_tasks(tmp_path):
+    catalog = write_yaml(
+        tmp_path / "c.yaml", {"tasks": [{"name": f"tb/t{i}", "category": "x"} for i in range(6)]}
+    )
+    used = write_yaml(tmp_path / "used.yaml", {"tasks": [{"name": "tb/t0"}, {"name": "tb/t1"}]})
+    picked = sample(catalog, 99, seed=1, exclude=[used])
+    assert {t.name for t in picked.tasks} == {f"tb/t{i}" for i in range(2, 6)}
+
+
+def test_hard_cap_is_relative_to_drawn_set():
+    names = [f"tb/t{i}" for i in range(46)]
+    counts = {n: ((0, 2) if i < 10 else (2, 2)) for i, n in enumerate(names)}
+    _, held, _ = split(
+        TaskList(tasks=[TaskEntry(name=n) for n in names]),
+        counts,
+        n_dev=0,
+        n_heldout=999,
+        hard_cap=0.2,
+        seed=1,
+    )
+    hard = sum(t.stratum == "hard" for t in held.tasks)
+    assert len(held.tasks) == 36 + hard and hard / len(held.tasks) <= 0.2 and hard == 9

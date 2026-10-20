@@ -1,0 +1,15 @@
+schema_version: 2
+id: tb21-calibration-v2
+phase: calibration
+tasks: tasks/calibration_2.yaml
+arms:
+  - agents/sonnet-native.yaml
+attempts: 2
+randomize_arm_order: true
+seed: 20261011
+concurrency: 1
+limits_ref: config/limits.yaml#calibration
+budget:
+  hard_cap_usd: 120   # leaves room for 20 in-flight trials x $3 calibration cap
+  soft_warning_usd: 30
+require_frozen_tasks: false

@@ -8,11 +8,19 @@ from agentbench.openrouter import OpenRouter
 class JevController:
     name = "jev"
 
-    def __init__(self, client: OpenRouter, jev: JevCfg, criteria: Criteria, timeout_s: float):
+    def __init__(
+        self,
+        client: OpenRouter,
+        jev: JevCfg,
+        criteria: Criteria,
+        timeout_s: float,
+        finish_threshold: float | None = None,
+    ):
         self.client = client
         self.jev = jev
         self.criteria = criteria
         self.timeout_s = timeout_s
+        self.finish_threshold = finish_threshold
 
     async def decide(self, question: str, state: dict[str, Any]) -> Decision:
         spec = getattr(self.criteria, question)
@@ -29,6 +37,11 @@ class JevController:
             choice = answer["choice"]
         except (KeyError, TypeError) as e:
             raise ControllerOutputError(f"malformed response: {str(data)[:200]}", usage) from e
+        probabilities = answer.get("probabilities") or {}
+        if question == "finish" and self.finish_threshold is not None:
+            if "finish" not in probabilities:
+                raise ControllerOutputError("threshold policy needs probabilities", usage)
+            choice = "finish" if probabilities["finish"] >= self.finish_threshold else "verify"
         return Decision(
             question=question,
             choice=choice,

@@ -157,7 +157,7 @@ def comparison_table() -> None:
         p = c.p_cost if c.confirmatory else c.p_cost_holm
         p_text = "<0.001" if p < 0.001 else f"{p:.3f}"
         rows.append(
-            f"{c.id} & {LABELS[c.treatment]} vs {LABELS[c.control]} & "
+            f"{c.id} & {LABELS[c.treatment]} vs.\\ {LABELS[c.control]} & "
             f"{num(c.pass_diff * 100)} & [{num(c.pass_diff_ci_lo * 100)}, "
             f"{num(c.pass_diff_ci_hi * 100)}] & {c.cost_ratio_gm:.2f} & "
             f"[{c.cost_ratio_ci_lo:.2f}, {c.cost_ratio_ci_hi:.2f}] & {p_text} \\\\"

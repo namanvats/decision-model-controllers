@@ -1,7 +1,7 @@
 schema_version: 1
 # Planning estimates only (agentbench plan). Real spend always comes from usage.cost.
-as_of: 2026-10-11
+as_of: 2026-10-21
 expected_trial_usd:
-  sonnet_main: 0.40   # Sonnet 5.5 at $2/$10
+  sonnet_main: 0.19   # observed eval-1 mean ($59.46 / 315 trials)
   qwen_main: 0.35     # Qwen 3.8 Max at $2/$6
   mock_main: 0.0

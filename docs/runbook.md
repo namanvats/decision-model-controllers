@@ -112,3 +112,12 @@ uv run agentbench plan <experiment.yaml>          # progress: done / pending / r
 uv run agentbench cleanup --delete                # delete orphaned sandboxes (asks first)
 rm results/<experiment-id>/.runner.lock           # only if a crashed run left a stale lock
 ```
+
+## 7. Eval-2 (more tasks + threshold arm)
+
+```bash
+tar czf ~/agentbench-results-backup-$(date +%Y%m%d).tar.gz results   # results/ is not in git
+git add -A && git commit -m "Eval-2 pre-specification"              # commit before any eval-2 trial
+nohup caffeinate -i bash scripts/run_eval2.sh > eval2.log 2>&1 &     # calibrate → split → freeze → run → analyze
+tail -f eval2.log                                                    # follow progress; re-run the script to resume
+```

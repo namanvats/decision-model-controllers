@@ -1,3 +1,4 @@
+\pdfoutput=1
 \documentclass[10pt]{article}
 
 \usepackage[margin=1in]{geometry}
@@ -26,9 +27,9 @@
 \titlespacing*{\paragraph}{0pt}{0.8ex plus 0.4ex minus 0.2ex}{0.8em}
 \setlength{\bibsep}{2pt plus 1pt}
 \renewcommand{\bibfont}{\small}
+\hypersetup{pdftitle={Good Judgment, Bad Advice: Decision-Model Controllers Raise Agent Cost Without Improving Success}, pdfauthor={Naman Vats}}
 
 \title{Good Judgment, Bad Advice: Decision-Model Controllers\\Raise Agent Cost Without Improving Success}
-% TODO: add affiliation.
 \author{Naman Vats\\\texttt{be10360.17@bitmesra.ac.in}}
 \date{}
 
@@ -38,19 +39,20 @@
 \begin{abstract}
 Agent scaffolds increasingly delegate small decisions (whether to stop, verify, or change approach) to cheaper models.
 We ask whether a typed decision model, Jev~1.13, consulted only at deterministic decision points, makes a Claude Sonnet~5.5 terminal agent cheaper without making it worse.
-In a pre-specified study on Terminal-Bench~2.1 we hold one agent loop fixed and vary only the controller: none, deterministic rules, a small LLM (Claude Haiku~5.5) answering the same questions, Jev, and a placebo that samples Jev's development-phase choice frequencies at the same moments.
+In a pre-specified study on Terminal-Bench~2.1, we hold one agent loop fixed and vary only the controller: none, deterministic rules, a small LLM (Claude Haiku~5.5) answering the same questions, Jev, and a placebo that samples Jev's development-phase choice frequencies at the same moments.
 On 21 held-out tasks (315 trials), Jev raised cost per attempt by 19\% (geometric-mean ratio 1.19, 95\% CI 1.02--1.36) at an identical pass rate (73.0\% vs.\ 73.0\%).
 Jev was cheaper than the small-LLM controller (ratio 0.81) but 22\% more expensive than the placebo, and no pass-rate difference between arms was detectable.
 Offline, Jev ranked finish requests better than the alternatives (AUROC 0.78 vs.\ 0.62 for rules and 0.60 for the small LLM) but was poorly calibrated: its mean probability that a run was complete was 0.50 when 87\% of those runs passed, so it asked the agent to verify work that was already correct.
 No controller ever chose to abandon a run.
 Informative decision signals did not become useful interventions; we discuss what that would require.
+Code: \url{https://github.com/namanvats/decision-model-controllers}.
 \end{abstract}
 
 \section{Introduction}
 
 Terminal agents solve tasks by running long loops of model calls and shell commands~\citep{yao2023react,yang2024sweagent}.
 Their cost is dominated by the reasoning model, and scaffolds add control logic around it: when to stop, when to check work, when to change approach.
-A natural way to make that logic both smarter and cheap is to delegate it to a small model.
+A natural way to make that logic both smarter and cheaper is to delegate it to a small model.
 Typed decision models are built for this: given a state and a fixed set of options, they return a choice and a probability distribution, at a small fraction of the price of a reasoning model.
 Jev~1.13~\citep{jevdocs}, for example, is priced at \$0.042 per million input tokens; in our runs a decision cost about \$0.00008.
 
@@ -62,9 +64,8 @@ Our contributions are a pre-specified, placebo-controlled design that varies onl
 \section{Related work}
 
 ReAct-style loops interleave reasoning with tool calls~\citep{yao2023react}, and the interface around the model matters as much as the model~\citep{yang2024sweagent}.
-Reflexion adds verbal self-feedback between attempts~\citep{shinn2023reflexion}, while asking a model to re-check its work without new external information often fails to improve it~\citep{huang2024selfcorrect}; our verification nudge is of this kind, although the agent can gather new evidence by running commands.
+Reflexion adds verbal self-feedback between attempts~\citep{shinn2023reflexion}; by contrast, asking a model to re-check its work without new external information often fails to improve it~\citep{huang2024selfcorrect}; our verification nudge is of this kind, although the agent can gather new evidence by running commands.
 Cascades and routers send queries to cheaper models when possible~\citep{chen2023frugalgpt,ong2024routellm}; we study a different lever, where the reasoning model is fixed and a cheap model decides only how the loop proceeds.
-% TODO: add verified citations for agent early-termination and controller work named in the study plan (EET, AgentStop, Bayesian control for coding agents) and for REFLEX / other Jev evaluations.
 Selective prediction and calibration study when confidence can be acted on~\citep{geifman2017selective,guo2017calibration}, LLMs can estimate whether their own answers are correct~\citep{kadavath2022know}, and LLM judges are widely used to grade outputs~\citep{zheng2023judging}.
 We measure ranking and calibration offline, and then whether acting on them helps online.
 
@@ -100,7 +101,7 @@ We measure ranking and calibration offline, and then whether acting on them help
 
 \paragraph{Agent loop.}
 One loop is shared by all arms (\cref{fig:loop}).
-Each step is one call to the reasoning model, which may call \texttt{bash} or \texttt{finish}; a reply without a tool call counts as a finish request.
+Each step is one call to the reasoning model, which may invoke \texttt{bash} or \texttt{finish}; a reply without a tool call counts as a finish request.
 Commands run through Harbor~\citep{harbor} in a fresh shell inside a Daytona sandbox~\citep{daytona} built from the task's own image.
 Tool output is truncated to its first 4{,}000 and last 8{,}000 characters, the context is never compacted, and the loop and all API keys stay on the host.
 
@@ -128,7 +129,7 @@ The \emph{placebo} samples from Jev's development-phase frequencies (Q-progress:
 \paragraph{Guards.}
 Guards override every controller.
 G1 enforces hard limits on steps, spend, tokens and wall time.
-G2 allows \texttt{abandon} only after 40\% of the step budget and a failure streak or repeated lack of progress; otherwise it becomes \texttt{recover}.
+G2 allows \texttt{abandon} only once 40\% of the step budget is used and the run shows a failure streak or repeated lack of progress; otherwise it becomes \texttt{recover}.
 G3 accepts the third finish request after two \texttt{verify} answers.
 G4 replaces a timeout, transport error or malformed answer with \texttt{continue} or \texttt{finish}, and logs it.
 
@@ -140,7 +141,7 @@ Cost is the provider-reported cost of every reasoning-model and controller call;
 Harbor~0.24.0 runs the task's verifier after the agent stops and enforces each task's own agent timeout (at most 60 minutes for the tasks used); a reward of 1 is a pass.
 
 \paragraph{Protocol.}
-Terminal-Bench~2.1~\citep{tbench21} has 89 tasks; we pinned the hub dataset by content digest and excluded two tasks whose agent timeouts exceed 60 minutes and one that Sonnet~5.5 refuses on its first turn, identified before the split.
+Terminal-Bench~2.1~\citep{tbench21} has 89 tasks; we pinned the hub dataset by content digest and excluded two tasks whose agent timeouts exceed 60 minutes and one that Sonnet~5.5 refuses on its first turn (found during calibration, before the split).
 \emph{Calibration:} 30 tasks sampled across categories were run twice with native under generous caps (100 steps, \$3), stratified as \emph{hard} (0/2 passes), \emph{mid} (1/2) or \emph{easy} (2/2), and split into 8 development tasks (6 easy, 1 mid, 1 hard) and 21 held-out tasks (14 easy, 3 mid, 4 hard); calibration attempts are not used in any result.
 \emph{Caps} were set to 60 steps and \$1.00 per trial for every arm, above every calibration run (passing runs: at most 52 steps and \$0.48; all runs: at most \$0.98).
 \emph{Development:} the four non-placebo arms ran twice on the development tasks; nothing was tuned, and the runs only supplied the placebo distribution.
@@ -236,7 +237,7 @@ Pass rates differed between Jev and native on only three tasks (\cref{app:pertas
 
 \paragraph{Abandon was never used.}
 No controller chose \texttt{abandon} in any of the 315 trials, so G2 never had to block one; the placebo could not abandon by construction.
-The only action designed to save money played no part, and hopeless runs ran until a limit: all 15 runs of the hardest task failed at Harbor's timeout (11) or the \$1.00 cap (4).
+The only action designed to save money played no part, and hopeless runs ran until a limit: all 15 runs of \texttt{make-doom-for-mips} failed at Harbor's timeout (11) or the \$1.00 cap (4).
 
 \paragraph{Overhead.}
 Controller calls were negligible: Jev averaged 0.52\,s per decision and 0.11\% of spend, the small LLM 1.46\,s and 0.47\%; no call timed out or returned a malformed answer.
@@ -244,6 +245,7 @@ Controller calls were negligible: Jev averaged 0.52\,s per decision and 0.11\% o
 \section{Discussion}
 
 \paragraph{Why informed control did not pay.}
+Three properties of this setting work against an advisory controller.
 First, the agent's own finish requests were usually right (87\% of native finish requests passed), so a verification round is mostly spent re-checking correct work.
 Second, Jev's probabilities rank well but sit far below the base rate, so acting on its argmax converts a good ranking into frequent, low-value interventions; a base-rate-aware threshold would intervene far less, but even Jev's least confident group passed 79\% of the time.
 Third, most failures (10 of 17 for native) ended at a timeout or a cap rather than with a finish request, and no controller proposed to abandon them; the abandon guard was never the obstacle.
@@ -255,7 +257,7 @@ Without the placebo, the comparison against native alone would suggest only that
 \paragraph{Implications.}
 Controllers for agent loops should be evaluated end to end on cost, against rules and a placebo, not only on judgment accuracy.
 Typed decision models are cheap and fast enough that overhead is not the problem (Jev cost 19\% less than the small-LLM controller and answered about three times faster); what matters is the policy that maps their probabilities to actions.
-At scale, a 19\% increase in agent cost per attempt compounds across every task an agent runs.
+At scale, a 19\% increase in cost per attempt applies to every task an agent runs.
 A follow-up should act on calibrated probabilities with base-rate-aware thresholds and give the controller stopping actions it will actually use, pre-specified on new tasks.
 Two lessons for evaluation harnesses also emerged: a naive ``did the agent verify?'' feature misses agents that check work by running their own programs, and safety refusals return an empty reply that a loop can mistake for a finish request.
 
@@ -277,12 +279,12 @@ The gap between an informative signal and a useful intervention is the policy in
 
 \paragraph{Reproducibility.}
 The benchmark version, Harbor version, model identifiers, caps, trigger and guard parameters, and all prompts are given in the paper and its appendices; every trial records its configuration fingerprint, lockfile hash and Harbor command.
-% TODO: add the repository link for the harness and trial logs once public.
-% TODO: add funding and competing-interests statement (relationship, if any, with TypeSafe and OpenRouter).
+The harness, configurations and analysis scripts are publicly available.\footnote{\url{https://github.com/namanvats/decision-model-controllers}}
 
 \bibliographystyle{plainnat}
 \bibliography{refs}
 
+\clearpage
 \appendix
 
 \section{Prompts and messages}

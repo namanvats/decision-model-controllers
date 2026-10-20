@@ -184,7 +184,8 @@ class AgentLoop:
         )
         self.rec.trigger_state(step=self.step, trigger=trigger, question=question, state=state)
 
-        if self.controller is None:
+        asked = self.arm.cfg.controller.questions
+        if self.controller is None or (asked is not None and question not in asked):
             self.rec.event("trigger", step=self.step, trigger=trigger, consulted=False)
             return None
         if self.controller_calls >= self.limits.max_controller_calls:

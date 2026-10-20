@@ -39,12 +39,20 @@ def allocate(sizes: dict[str, int], n: int) -> dict[str, int]:
     return alloc
 
 
-def sample(catalog: str | Path, n: int, seed: int, source: str | Path | None = None) -> TaskList:
+def sample(
+    catalog: str | Path,
+    n: int,
+    seed: int,
+    source: str | Path | None = None,
+    exclude: list[str | Path] = (),
+) -> TaskList:
     """Seeded sample stratified by category from the non-excluded catalog (or a subset list)."""
     entries = [t for t in read_yaml(catalog)["tasks"] if not t.get("excluded_reason")]
     if source:
         keep = {t.name for t in load_tasks(source).tasks}
         entries = [t for t in entries if t["name"] in keep]
+    used = {t.name for path in exclude for t in load_tasks(path).tasks}
+    entries = [t for t in entries if t["name"] not in used]
     by_category: dict[str, list[dict]] = defaultdict(list)
     for entry in sorted(entries, key=lambda t: t["name"]):
         by_category[entry.get("category") or "uncategorized"].append(entry)
@@ -69,6 +77,15 @@ def stratum(passes: int, attempts: int) -> str:
     if passes == 0:
         return "hard"
     return "easy" if passes == attempts else "mid"
+
+
+def max_hard(sizes: dict[str, int], n: int, hard_cap: float) -> int:
+    """Largest hard count keeping hard tasks <= hard_cap of the held-out set actually drawn."""
+    other = sizes["easy"] + sizes["mid"]
+    hard = min(sizes["hard"], n)
+    while hard > 0 and hard > hard_cap * min(n, other + hard):
+        hard -= 1
+    return hard
 
 
 def split(
@@ -99,7 +116,7 @@ def split(
     dev = [t for s in STRATA for t in pools[s][: dev_alloc[s]]]
     rest = {s: pools[s][dev_alloc[s] :] for s in STRATA}
     sizes = {s: len(p) for s, p in rest.items()}
-    sizes["hard"] = min(sizes["hard"], math.floor(hard_cap * n_heldout))
+    sizes["hard"] = min(sizes["hard"], max_hard(sizes, n_heldout, hard_cap))
     held_alloc = allocate(sizes, n_heldout)
     heldout = [t for s in STRATA for t in rest[s][: held_alloc[s]]]
     return TaskList(tasks=dev), TaskList(tasks=heldout), missing

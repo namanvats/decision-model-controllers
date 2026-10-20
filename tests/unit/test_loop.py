@@ -146,3 +146,25 @@ async def test_content_filter_is_a_refusal(fake_env, recorder):
     loop = AgentLoop(arm_with(), Refuses(), fake_env, None, recorder)
     result = await loop.run("do the task")
     assert result.termination_reason == "model_refusal" and fake_env.commands == []
+
+
+async def test_questions_limit_which_triggers_consult(fake_env, recorder):
+    from dataclasses import replace
+
+    arm = arm_with()
+    ctrl = arm.cfg.controller.model_copy(update={"questions": ["finish"]})
+    arm = replace(arm, cfg=arm.cfg.model_copy(update={"controller": ctrl}))
+    _, result = await run(
+        [{"bash": "false"}] * 3 + [{"finish": "x"}],
+        Always(progress="abandon"),
+        arm=arm,
+        env=fake_env,
+        recorder=recorder,
+    )
+    decisions = read_jsonl(recorder.dir / "decision_events.jsonl")
+    assert [d["question"] for d in decisions] == ["finish"]
+    assert result.termination_reason == "finished"
+    assert {s["question"] for s in read_jsonl(recorder.dir / "trigger_states.jsonl")} == {
+        "progress",
+        "finish",
+    }

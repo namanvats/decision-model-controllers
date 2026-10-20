@@ -8,3 +8,5 @@ comparisons:
   - {id: C3, treatment: sonnet-jev, control: sonnet-rules, confirmatory: false}
   - {id: C4, treatment: sonnet-jev, control: sonnet-placebo, confirmatory: false}
   - {id: C5, treatment: qwen-jev, control: qwen-native, confirmatory: false}
+  - {id: C6, treatment: sonnet-jev-threshold, control: sonnet-native, confirmatory: false}
+  - {id: C7, treatment: sonnet-jev-threshold, control: sonnet-jev, confirmatory: false}

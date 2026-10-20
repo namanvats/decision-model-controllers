@@ -16,3 +16,5 @@ eval.log
 *.log
 nohup.out
 run_outputs_*.txt
+arxiv-source.tar.gz
+Resume-NV-EU/

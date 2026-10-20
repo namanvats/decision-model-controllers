@@ -1,0 +1,19 @@
+schema_version: 2
+id: tb21-eval-v2
+phase: eval
+tasks: tasks/evaluation_2.yaml
+arms:
+  - agents/sonnet-native.yaml
+  - agents/sonnet-rules.yaml
+  - agents/sonnet-smallllm.yaml
+  - agents/sonnet-jev.yaml
+  - agents/sonnet-placebo.yaml
+  - agents/sonnet-jev-threshold.yaml
+attempts: 3
+randomize_arm_order: true
+seed: 20261021
+concurrency: 1
+budget:
+  hard_cap_usd: 300
+  soft_warning_usd: 200
+require_frozen_tasks: true

@@ -395,8 +395,8 @@ def analyze(experiment_paths: list[str], out_dir: Path | None = None, log=print)
         SELECT arm, termination_reason, count(*) AS n FROM trials WHERE infra_error
         GROUP BY ALL ORDER BY ALL""").df()
     drift = con.sql("""
-        SELECT arm, count(DISTINCT config_hash) AS n_configs FROM trials
-        GROUP BY arm HAVING count(DISTINCT config_hash) > 1""").df()
+        SELECT experiment || '/' || arm AS arm, count(DISTINCT config_hash) AS n_configs
+        FROM trials GROUP BY experiment, arm HAVING count(DISTINCT config_hash) > 1""").df()
     hosts = con.sql("""
         SELECT arm, main_hosts, count(*) AS n_attempts FROM trials
         GROUP BY ALL ORDER BY ALL""").df()
@@ -450,7 +450,7 @@ def analyze(experiment_paths: list[str], out_dir: Path | None = None, log=print)
             f"> **Config drift:** arms ran under more than one frozen config: "
             f"{dict(zip(drift.arm, drift.n_configs, strict=True))}. See manifests.\n"
             if not drift.empty
-            else "Config check: every arm ran under a single frozen config.\n"
+            else "Config check: every arm ran under one frozen config per experiment.\n"
         ),
         "## Confirmatory (C1)\n",
         (

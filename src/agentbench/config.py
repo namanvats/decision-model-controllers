@@ -79,6 +79,8 @@ class ControllerCfg(Strict):
     prompt_ref: str | None = None
     distribution_ref: str | None = None
     timeout_s: float | None = None
+    finish_threshold: float | None = None  # jev: verify only when P(finish) is below this
+    questions: list[Literal["progress", "finish"]] | None = None  # None: consulted on both
 
 
 class ReasoningRef(Strict):

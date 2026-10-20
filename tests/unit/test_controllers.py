@@ -185,3 +185,22 @@ async def test_placebo_is_deterministic_per_trial():
 
     assert await run("a") == await run("a")
     assert await run("a") != await run("b")
+
+
+@respx.mock
+async def test_jev_threshold_overrides_argmax(client):
+    from dataclasses import replace
+
+    respx.post(JEV_URL).respond(json=jev_response())  # argmax verify, P(finish)=0.2
+    arm = arm_with("agents/sonnet-jev-threshold.yaml")
+    d = await decide_safely(make_controller(arm, client, "t"), "finish", state())
+    assert d.choice == "finish" and d.probabilities["finish"] == 0.2
+    strict = replace(
+        arm,
+        cfg=arm.cfg.model_copy(
+            update={"controller": arm.cfg.controller.model_copy(update={"finish_threshold": 0.5})}
+        ),
+    )
+    respx.post(JEV_URL).respond(json=jev_response())
+    d = await decide_safely(make_controller(strict, client, "t"), "finish", state())
+    assert d.choice == "verify"

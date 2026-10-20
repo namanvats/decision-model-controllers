@@ -38,7 +38,12 @@ def validate(experiment: str, check_phase: bool = True) -> None:
 
 
 @app.command()
-def plan(experiment: str) -> None:
+def plan(
+    experiment: str,
+    require_complete: bool = typer.Option(
+        False, help="Exit with an error unless every trial is done (or gave up after a retry)"
+    ),
+) -> None:
     """Show the randomized trial grid, progress, and estimated spend."""
     from agentbench.runner import concurrency, plan_trials, trial_status
 
@@ -59,6 +64,11 @@ def plan(experiment: str) -> None:
         typer.echo(f"  {t.order:>4}  {t.task_short:<36} a{t.attempt}  {t.arm_id}")
     if len(trials) > 12:
         typer.echo(f"  ... {len(trials) - 12} more")
+    if require_complete and todo:
+        typer.secho(
+            f"{len(todo)} trials not finished; re-run `agentbench run {experiment}`", fg="red"
+        )
+        raise typer.Exit(1)
 
 
 @app.command()
@@ -117,11 +127,12 @@ def tasks_sample(
     seed: int = 20261011,
     catalog: str = "tasks/catalog.yaml",
     source: str | None = typer.Option(None, help="Restrict to tasks in this list"),
+    exclude: list[str] = typer.Option([], help="Skip tasks listed in these files (repeatable)"),
 ) -> None:
     """Seeded, category-stratified sample of non-excluded catalog tasks."""
     from agentbench.tasks import sample, write_tasks
 
-    tasks = sample(catalog, n, seed, source)
+    tasks = sample(catalog, n, seed, source, exclude)
     write_tasks(out, tasks)
     typer.echo(
         f"wrote {len(tasks.tasks)} tasks to {out}: {dict(Counter(t.category for t in tasks.tasks))}"
@@ -152,7 +163,8 @@ def tasks_split(
         seed,
         excluded_tasks(),
     )
-    write_tasks(dev_out, dev)
+    if n_dev:
+        write_tasks(dev_out, dev)
     write_tasks(eval_out, heldout)
     for name, tl in (("dev", dev), ("held-out", heldout)):
         typer.echo(f"{name}: {len(tl.tasks)} tasks {dict(Counter(t.stratum for t in tl.tasks))}")

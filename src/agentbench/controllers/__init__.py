@@ -37,5 +37,7 @@ def make_controller(
             )
         case "jev":
             _check_options(arm)
-            return JevController(client, arm.jev, arm.criteria, ctrl.timeout_s)
+            return JevController(
+                client, arm.jev, arm.criteria, ctrl.timeout_s, ctrl.finish_threshold
+            )
     raise ConfigError(f"unknown controller type {ctrl.type}")
