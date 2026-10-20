@@ -3,3 +3,9 @@
 terminal-bench/break-filter-js-from-html: >-
   model_refusal: Sonnet 5.5 returns finish_reason=content_filter (native: refusal) on the
   first turn, every time (calibration 2026-10-11, 2/2 attempts, $0 spent)
+terminal-bench/crack-7z-hash: >-
+  model_refusal: Sonnet 5.5 refuses (finish_reason=content_filter) at step 1 on every attempt
+  (calibration-2 2026-10-21, 2/2 attempts)
+terminal-bench/vulnerable-secret: >-
+  model_refusal: Sonnet 5.5 refuses (finish_reason=content_filter) at step 2 on every attempt
+  (calibration-2 2026-10-21, 2/2 attempts)

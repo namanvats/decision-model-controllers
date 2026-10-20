@@ -212,7 +212,8 @@ tasks:
   gpus: 0
   allow_internet: true
   docker_image: alexgshaw/crack-7z-hash:20251031
-  excluded_reason: null
+  excluded_reason: 'model_refusal: Sonnet 5.5 refuses (finish_reason=content_filter)
+    at step 1 on every attempt (calibration-2 2026-10-21, 2/2 attempts)'
 - name: terminal-bench/custom-memory-heap-crash
   category: debugging
   difficulty: medium
@@ -1052,7 +1053,8 @@ tasks:
   gpus: 0
   allow_internet: true
   docker_image: alexgshaw/vulnerable-secret:20251031
-  excluded_reason: null
+  excluded_reason: 'model_refusal: Sonnet 5.5 refuses (finish_reason=content_filter)
+    at step 2 on every attempt (calibration-2 2026-10-21, 2/2 attempts)'
 - name: terminal-bench/winning-avg-corewars
   category: software-engineering
   difficulty: medium
